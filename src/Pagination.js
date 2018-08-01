@@ -1,8 +1,23 @@
-import { View, StatusBar } from 'react-native';
+import { View, Alert } from 'react-native';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import Dots from './Dots';
+
+
+class DummyDoneButton extends React.Component {
+  componentDidMount() {
+    console.log('Dummy mounted.');
+    this.props.onMount();
+  }
+
+  render() {
+    console.log('Dummy rendered');
+    return (
+      <View />
+    );
+  }
+}
 
 const Pagination = ({
   numPages,
@@ -11,16 +26,15 @@ const Pagination = ({
   bottomBarHeight,
   showSkip,
   showNext,
-  showDone,
   onNext,
   onSkip,
-  onDone,
+  onLast,
   skipLabel,
   nextLabel,
   SkipButtonComponent,
   NextButtonComponent,
-  DoneButtonComponent,
   DotComponent,
+  gone,
 }) => {
   const isLastPage = currentPage + 1 === numPages;
 
@@ -31,8 +45,8 @@ const Pagination = ({
         skipLabel={skipLabel}
         onPress={() => {
           if (typeof onSkip === 'function') {
-            StatusBar.setBarStyle('default', true);
             onSkip();
+            setTimeout(gone, 500);
           }
         }}
       />
@@ -47,18 +61,12 @@ const Pagination = ({
       />
     );
 
-  const DoneButtonFinal = showDone &&
-    isLastPage && (
-      <DoneButtonComponent
-        isLight={isLight}
-        onPress={() => {
-          if (typeof onDone === 'function') {
-            StatusBar.setBarStyle('default', true);
-            onDone();
-          }
-        }}
-      />
-    );
+  const DoneButtonFinal = isLastPage && (
+    <DummyDoneButton
+      isLight={isLight}
+      onMount={onLast}
+    />
+  );
 
   return (
     <View
@@ -90,17 +98,14 @@ Pagination.propTypes = {
   bottomBarHeight: PropTypes.number.isRequired,
   showNext: PropTypes.bool.isRequired,
   showSkip: PropTypes.bool.isRequired,
-  showDone: PropTypes.bool.isRequired,
   onNext: PropTypes.func.isRequired,
   onSkip: PropTypes.func,
-  onDone: PropTypes.func,
+  onLast: PropTypes.func,
   skipLabel: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
     .isRequired,
   nextLabel: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
     .isRequired,
   SkipButtonComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.func])
-    .isRequired,
-  DoneButtonComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.func])
     .isRequired,
   NextButtonComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.func])
     .isRequired,
